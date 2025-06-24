@@ -7,8 +7,8 @@
   },
   "dependencies": {
     "dotenv": "^16.5.0",
-    "nodemailer": "^6.10.1",
-    "twilio": "^4.23.0",
-    "undetected-puppeteer": "^1.0.1"
+    "nodemailer": "^6.9.12",
+    "twilio": "^4.16.0",
+    "undetected-puppeteer": "^3.4.2"
   }
 }
