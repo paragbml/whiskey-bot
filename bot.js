@@ -1,3 +1,4 @@
+console.log('🚀 Bot starting up...');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { sendEmail, sendSMS } = require('./notifier');
