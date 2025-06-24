@@ -1,6 +1,5 @@
 require('dotenv').config();
 const nodemailer = require('nodemailer');
-const twilio = require('twilio');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -20,15 +19,4 @@ async function sendEmail(subject, text) {
   console.log('📧 Email sent:', subject);
 }
 
-async function sendSMS(message) {
-  if (!process.env.TWILIO_SID || !process.env.TWILIO_AUTH_TOKEN) return;
-  const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
-  await client.messages.create({
-    body: message,
-    from: process.env.TWILIO_PHONE,
-    to: process.env.TARGET_PHONE,
-  });
-  console.log('📱 SMS sent:', message);
-}
-
-module.exports = { sendEmail, sendSMS };
+module.exports = { sendEmail };
