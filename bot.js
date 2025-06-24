@@ -1,9 +1,6 @@
-const puppeteer = require('puppeteer-extra');
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const puppeteer = require('undetected-puppeteer');
 const { sendEmail, sendSMS } = require('./notifier');
 require('dotenv').config();
-
-puppeteer.use(StealthPlugin());
 
 const EMAIL = process.env.EMAIL;
 const PASSWORD = process.env.PASSWORD;
@@ -16,7 +13,7 @@ async function login(page) {
   try { await page.click('#onetrust-accept-btn-handler'); } catch {}
 
   console.log('⏳ Waiting for page to stabilize...');
-  await new Promise(res => setTimeout(res, 5000)); // FIXED from page.waitForTimeout
+  await new Promise(res => setTimeout(res, 5000));
 
   const screenshotBuffer = await page.screenshot();
   console.log('📸 Screenshot taken before trying to click login');
@@ -39,9 +36,13 @@ async function login(page) {
 }
 
 async function monitor() {
-  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
   const page = await browser.newPage();
 
+  await page.setViewport({ width: 1366, height: 768 });
   await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
   await login(page);
