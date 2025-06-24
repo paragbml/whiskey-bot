@@ -15,9 +15,14 @@ async function login(page) {
   try { await page.click('div.age-gate__cta button.button'); } catch {}
   try { await page.click('#onetrust-accept-btn-handler'); } catch {}
 
-  console.log('🔎 Waiting for login button...');
-  await page.waitForSelector('button.modal-header-login', { visible: true, timeout: 15000 });
-  await page.screenshot({ path: 'before-login-click.png' });
+  console.log('⏳ Waiting for page to stabilize...');
+  await page.waitForTimeout(5000);
+
+  await page.screenshot({ path: 'login-page.png' });
+  console.log('📸 Screenshot taken before trying to click login');
+
+  console.log('🔎 Looking for login button...');
+  await page.waitForSelector('button.modal-header-login', { visible: true, timeout: 30000 });
   await page.click('button.modal-header-login');
   console.log('✅ Login button clicked');
 
@@ -25,6 +30,7 @@ async function login(page) {
   await page.type('#authentication_header_login_form_email', EMAIL, { delay: 50 });
   await page.type('#authentication_header_login_form_password', PASSWORD, { delay: 50 });
   await page.click('form[aria-label="Login Form"] button[type="submit"]');
+
   await page.waitForSelector('#account-popover-open .loginOrAccountText', { visible: true, timeout: 10000 });
   console.log('🎉 Logged in successfully');
 }
@@ -33,16 +39,20 @@ async function monitor() {
   const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
   const page = await browser.newPage();
 
+  // 🛠 Fix for potential mobile view: Force Desktop User-Agent
+  await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+
   await login(page);
   let seenProducts = new Set();
 
   while (true) {
     await page.goto(TARGET_URL, { waitUntil: 'domcontentloaded' });
+
     const products = await page.$$eval('.product-tile .product-name', els => els.map(e => e.textContent.trim()));
     const newProducts = products.filter(name => !seenProducts.has(name));
 
     if (newProducts.length > 0) {
-      console.log('🆕 New products:', newProducts);
+      console.log('🆕 New products detected:', newProducts);
       for (const name of newProducts) seenProducts.add(name);
 
       const alertText = `New Whiskey Alert!\n${newProducts.join('\n')}\n${TARGET_URL}`;
@@ -61,7 +71,7 @@ async function monitor() {
       console.log('🔎 No new products. Checking again...');
     }
 
-    await new Promise(res => setTimeout(res, 10000)); // 10s delay between checks
+    await new Promise(res => setTimeout(res, 10000)); // 10-second delay between checks
   }
 }
 
