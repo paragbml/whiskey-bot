@@ -1,1 +1,3 @@
-echo "puppeteer-extra/" >> .gitignore
+node_modules/
+.env
+puppeteer-extra/
