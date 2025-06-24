@@ -18,8 +18,11 @@ async function login(page) {
   console.log('⏳ Waiting for page to stabilize...');
   await page.waitForTimeout(5000);
 
-  await page.screenshot({ path: 'login-page.png' });
+  const screenshotBuffer = await page.screenshot();
   console.log('📸 Screenshot taken before trying to click login');
+  console.log('====LOGIN PAGE SCREENSHOT BASE64====');
+  console.log(screenshotBuffer.toString('base64'));
+  console.log('====END SCREENSHOT====');
 
   console.log('🔎 Looking for login button...');
   await page.waitForSelector('button.modal-header-login', { visible: true, timeout: 30000 });
@@ -39,7 +42,7 @@ async function monitor() {
   const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
   const page = await browser.newPage();
 
-  // 🛠 Fix for potential mobile view: Force Desktop User-Agent
+  // Force desktop site for better consistency
   await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
   await login(page);
@@ -65,13 +68,17 @@ async function monitor() {
         await page.waitForSelector('button.add-to-cart', { visible: true, timeout: 5000 });
         await page.click('button.add-to-cart');
         console.log('🛒 Product added to cart!');
-        await page.screenshot({ path: 'added-to-cart.png' });
+
+        const cartScreenshot = await page.screenshot();
+        console.log('====ADDED TO CART SCREENSHOT BASE64====');
+        console.log(cartScreenshot.toString('base64'));
+        console.log('====END CART SCREENSHOT====');
       }
     } else {
       console.log('🔎 No new products. Checking again...');
     }
 
-    await new Promise(res => setTimeout(res, 10000)); // 10-second delay between checks
+    await new Promise(res => setTimeout(res, 10000)); // 10s delay between checks
   }
 }
 
