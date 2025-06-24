@@ -9,6 +9,6 @@
     "dotenv": "^16.5.0",
     "nodemailer": "^6.9.12",
     "twilio": "^4.16.0",
-    "undetected-puppeteer": "^3.4.2"
+    "undetected-puppeteer": "^2.0.0"
   }
 }
