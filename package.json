@@ -1,0 +1,16 @@
+{
+  "name": "whiskey-bot",
+  "version": "1.0.0",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "puppeteer": "^24.10.2",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "nodemailer": "^6.9.12",
+    "twilio": "^4.16.0"
+  }
+}
