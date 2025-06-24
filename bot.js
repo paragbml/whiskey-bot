@@ -1,4 +1,3 @@
-console.log('🚀 Bot starting up...');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { sendEmail, sendSMS } = require('./notifier');
@@ -17,7 +16,7 @@ async function login(page) {
   try { await page.click('#onetrust-accept-btn-handler'); } catch {}
 
   console.log('⏳ Waiting for page to stabilize...');
-  await page.waitForTimeout(5000);
+  await new Promise(res => setTimeout(res, 5000)); // FIXED from page.waitForTimeout
 
   const screenshotBuffer = await page.screenshot();
   console.log('📸 Screenshot taken before trying to click login');
@@ -43,7 +42,6 @@ async function monitor() {
   const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] });
   const page = await browser.newPage();
 
-  // Force desktop site for better consistency
   await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
   await login(page);
@@ -79,7 +77,7 @@ async function monitor() {
       console.log('🔎 No new products. Checking again...');
     }
 
-    await new Promise(res => setTimeout(res, 10000)); // 10s delay between checks
+    await new Promise(res => setTimeout(res, 10000)); // 10-second delay between checks
   }
 }
 
