@@ -7,7 +7,6 @@ puppeteer.use(StealthPlugin());
 
 const EMAIL = process.env.EMAIL;
 const PASSWORD = process.env.PASSWORD;
-
 const TARGET_URL = 'https://www.finewineandgoodspirits.com/c/whiskey/whiskey/1010102?q=%3Arelevance%3AproductType%3ABourbon%3AinStockFlag%3Atrue';
 
 async function login(page) {
@@ -16,11 +15,18 @@ async function login(page) {
   try { await page.click('div.age-gate__cta button.button'); } catch {}
   try { await page.click('#onetrust-accept-btn-handler'); } catch {}
 
+  console.log('🔎 Waiting for login button...');
+  await page.waitForSelector('button.modal-header-login', { visible: true, timeout: 15000 });
+  await page.screenshot({ path: 'before-login-click.png' });
   await page.click('button.modal-header-login');
+  console.log('✅ Login button clicked');
+
+  await page.waitForSelector('#authentication_header_login_form_email', { visible: true, timeout: 10000 });
   await page.type('#authentication_header_login_form_email', EMAIL, { delay: 50 });
   await page.type('#authentication_header_login_form_password', PASSWORD, { delay: 50 });
   await page.click('form[aria-label="Login Form"] button[type="submit"]');
   await page.waitForSelector('#account-popover-open .loginOrAccountText', { visible: true, timeout: 10000 });
+  console.log('🎉 Logged in successfully');
 }
 
 async function monitor() {
@@ -28,8 +34,6 @@ async function monitor() {
   const page = await browser.newPage();
 
   await login(page);
-  console.log('✅ Logged in successfully');
-
   let seenProducts = new Set();
 
   while (true) {
@@ -57,7 +61,7 @@ async function monitor() {
       console.log('🔎 No new products. Checking again...');
     }
 
-    await new Promise(res => setTimeout(res, 10000)); // Check every 10s
+    await new Promise(res => setTimeout(res, 10000)); // 10s delay between checks
   }
 }
 
